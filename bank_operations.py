@@ -37,15 +37,15 @@ class BankAccountTestDeposit(unittest.TestCase):
         self.assertEqual(bank_account.get_balance(), 150)
 
     def test_deposit_when_balance_zero(self):
-        bank_account = BankAccount()
-        bank_account.deposit()
-        self.assertEqual(bank_account.get_balance(), 0)
+        bank_account = BankAccount(0)
+        bank_account.deposit(50)
+        self.assertEqual(bank_account.get_balance(), 50)
 
     def test_account_replenishment_by_zero(self):
         bank_account = BankAccount(0)
         with self.assertRaises(ValueError) as zero_deposit:
             bank_account.deposit(0)
-        self.assertEqual(str(zero_deposit.exception), "Please enter a deposit greater than 0")
+        self.assertEqual(str(zero_deposit.exception), "Deposit amount must be positive")
 
     def test_account_replenishment_by_negative_value(self):
         bank_account = BankAccount(0)
