@@ -51,7 +51,7 @@ class BankAccountTestDeposit(unittest.TestCase):
         bank_account = BankAccount(0)
         with self.assertRaises(ValueError) as negative_value:
             bank_account.deposit(-100)
-        self.assertEqual(str(negative_value.exception), "Please enter a deposit greater than 0")
+        self.assertEqual(str(negative_value.exception), "Deposit amount must be positive")
 
 
 class BankAccountTestWithdrawal(unittest.TestCase):
@@ -64,36 +64,40 @@ class BankAccountTestWithdrawal(unittest.TestCase):
         bank_account = BankAccount(100)
         with self.assertRaises(ValueError) as negative_value_withdrawal:
             bank_account.withdraw(-10)
-        self.assertEqual(str(negative_value_withdrawal.exception), "Please enter a positive value")
+        self.assertEqual(str(negative_value_withdrawal.exception), "Withdrawal amount must be positive")
 
 
     def test_withdrawal_with_zero_value(self):
         bank_account = BankAccount(100)
         with self.assertRaises(ValueError) as zero_value_withdrawal:
             bank_account.withdraw(0)
-        self.assertEqual(str(zero_value_withdrawal.exception), "Please enter a positive value")
+        self.assertEqual(str(zero_value_withdrawal.exception), "Withdrawal amount must be positive")
 
     def test_withdrawal_over_customer_deposit(self):
         bank_account = BankAccount(50)
-        with self.assertRaises(ValueError) as withdrawal_over_balance:
+        with self.assertRaises(InsufficientFunds) as withdrawal_over_balance:
             bank_account.withdraw(150)
         self.assertEqual(str(withdrawal_over_balance.exception), "Insufficient funds")
 
 
 class BankAccountTestTransfer(unittest.TestCase):
     def test_account_transfer(self):
-        bank_account = BankAccount(100)
-        bank_account.transfer(20)
-        self.assertEqual(bank_account.get_balance() ,80)
+        sender = BankAccount(100)
+        receiver = BankAccount(50)
+        sender.transfer(receiver, 20)
+        self.assertEqual(sender.get_balance() ,80)
+        self.assertEqual(receiver.get_balance(), 70)
 
     def test_transfer_with_zero(self):
-        bank_account = BankAccount(0)
+        sender = BankAccount(100)
+        receiver = BankAccount(50)
         with self.assertRaises(ValueError) as zero_value:
-            bank_account.transfer(50)
-        self.assertEqual(str(zero_value.exception), "Insufficient funds for transfer")
+            sender.transfer(receiver, 50)
+        self.assertEqual(str(zero_value.exception), "Withdrawal amount must be positive")
 
     def test_transfer_with_negative_value(self):
-        bank_account = BankAccount(400)
+        sender = BankAccount(400)
+        receiver = BankAccount(100)
         with self.assertRaises(ValueError) as negative_value:
-            bank_account.transfer(-10)
-        self.assertEqual(str(negative_value.exception), "Your value is negative, please enter a positive")
+            sender.transfer(receiver, -10)
+        self.assertEqual(str(negative_value.exception), "Withdrawal amount must be positive")
